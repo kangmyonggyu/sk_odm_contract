@@ -7,17 +7,24 @@ const privateKeyProviderTestnet = new PrivateKeyProvider(privateKey, "https://be
 module.exports = {
  
   networks: {
-    // mainnet
-    besu: {
-      provider: privateKeyProviderMainnet,
-      gasPrice: 0,
-      network_id: "2020"
-    },
-//    besuTest: {
-//      provider: privateKeyProviderTestnet,
-//      gasPrice: 0,
-//      network_id: "2020"
-//    },
+        // development env ( ganache )
+        development: {
+          host: "localhost",
+          port: 7545,
+          network_id: "5777"
+        },
+        // test env ( testnet )
+        besuTest: {
+          provider: privateKeyProviderTestnet,
+          gasPrice: 0,
+          network_id: "2020"
+        },
+        // prod env ( mainnet )
+        besu: {
+          provider: privateKeyProviderMainnet,
+          gasPrice: 0,
+          network_id: "2020"
+        },
   },
   // Configure your compilers
   compilers: {
