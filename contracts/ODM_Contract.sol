@@ -38,6 +38,8 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         uint256 token_amount;
     }
 
+    uint256 private deposit_token_amount = 0;
+
     string private winner_company_name;
     address private winner_company_address;
     uint256 private winner_payment_token_amount;
@@ -81,6 +83,7 @@ contract ODM_Contract is ERC20, ERC20Detailed {
 
         delete bidding;
 
+        deposit_token_amount = 0;
         lowest_2nd_token_amount = 0;
         lowest_1st_token_index = 0;
         lowest_2nd_token_index = 0;
@@ -91,14 +94,11 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         transfer(C_company_address,   2000 * (10 ** uint256(decimals())));
     }
 
-    function deposit_to_paymentguarantee(uint256 _token) private {
-        transfer(payment_guarantee_address, _token);
-    }
-
     // Senario 2 @ brandowner to paymentGuaranteeAddress api :
     // input _token : 1500000000000000000000
     function api_brandowner_to_paymentguarantee(uint256 _token) public onlyBrandOwner {
-        deposit_to_paymentguarantee(_token);
+        transfer(payment_guarantee_address, _token);
+        deposit_token_amount = _token;
     }
 
     // Senario 3 @ bidding api :
@@ -108,12 +108,10 @@ contract ODM_Contract is ERC20, ERC20Detailed {
     // C company : 1200000000000000000000
     function api_bidding_company_to_paymentguarantee(uint256 _token) public onlyCompany {
         require(!company[msg.sender].is_finished_bidding,"You have already participated in the bidding.");
+        transfer(payment_guarantee_address, _token);
         bidding.push(Bidding(company[msg.sender].name, msg.sender, _token)); //TODO: transaction processing
         company[msg.sender].is_finished_bidding = true;                             //TODO: transaction processing
-        deposit_to_paymentguarantee(_token);
     }
-
-
 
     // Senario 4 @ bidding processing
     function api_bidding_processing() public onlyPaymentGuarantee {
