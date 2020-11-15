@@ -38,11 +38,13 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         uint256 token_amount;
     }
 
-    uint256 private deposit_token_amount = 0;
+
 
     string private winner_company_name;
     address private winner_company_address;
     uint256 private winner_payment_token_amount;
+    uint256 private deposit_token_amount = 0;
+
 
     uint256 public   lowest_2nd_token_amount;
     uint    public   lowest_1st_token_index;
@@ -77,16 +79,16 @@ contract ODM_Contract is ERC20, ERC20Detailed {
     }
 
     function reset_auction() public onlyPaymentGuarantee {
+        // reset variable
         company[A_company_address] = Company('A', true, false);
         company[B_company_address] = Company('B', true, false);
         company[C_company_address] = Company('C', true, false);
-
         delete bidding;
-
         deposit_token_amount = 0;
         lowest_2nd_token_amount = 0;
         lowest_1st_token_index = 0;
         lowest_2nd_token_index = 0;
+        winner_payment_token_amount = 0;
 
         transfer(brandowner_address,  1500 * (10 ** uint256(decimals())));
         transfer(A_company_address,   2000 * (10 ** uint256(decimals())));
@@ -125,9 +127,8 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         winner_payment_token_amount = lowest_2nd_token_amount;
 
         refund_bidding_token();
-
+        refund_deposit_token_to_brandowner();
         payment_winner_bidding_token(winner_company_address, winner_payment_token_amount);
-
     }
 
     function find_minimum_bidding_company_index(Bidding[] memory _bidding_list) private pure returns (uint) {
@@ -153,10 +154,10 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         uint minimum_token_company_index;
         uint256 minimum_token_amount;
 
-        for (uint i = 0; i < _bidding_list.length ; i++) {
-            if ( i != ignore_index) {
-                if ( i == 0 ) {
-                    minimum_token_company_index = 0;
+        if (ignore_index == 0) {
+            for (uint i = 1; i < _bidding_list.length ; i++) {
+                if ( i == 1 ) {
+                    minimum_token_company_index = i;
                     minimum_token_amount = _bidding_list[i].token_amount;
                 } else {
                     if (minimum_token_amount > _bidding_list[i].token_amount) { //TODO: discussion same senario is not
@@ -165,14 +166,34 @@ contract ODM_Contract is ERC20, ERC20Detailed {
                     }
                 }
             }
+        } else {
+            for (uint i = 0; i < _bidding_list.length ; i++) {
+                if ( i != ignore_index) {
+                    if ( i == 0 ) {
+                        minimum_token_company_index = 0;
+                        minimum_token_amount = _bidding_list[i].token_amount;
+                    } else {
+                        if (minimum_token_amount > _bidding_list[i].token_amount) { //TODO: discussion same senario is not
+                            minimum_token_company_index = i;
+                            minimum_token_amount = _bidding_list[i].token_amount;
+                        }
+                    }
+                }
+            }
         }
         return minimum_token_company_index;
     }
 
-
     function refund_bidding_token () private {
         for (uint i = 0 ; i < bidding.length ; i++) {
             transfer(bidding[i].company_address, bidding[i].token_amount);
+        }
+    }
+
+    // refund reposit token to brandowner
+    function refund_deposit_token_to_brandowner () private {
+        if (deposit_token_amount > winner_payment_token_amount) {
+            transfer(brandowner_address, deposit_token_amount - winner_payment_token_amount);
         }
     }
 
