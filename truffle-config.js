@@ -1,11 +1,12 @@
 const PrivateKeyProvider = require("@truffle/hdwallet-provider");
  
-const privateKey = "0xc87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3";
+const privateKey = "0xb530d97a37813d8d2f76a84e41d0d779b51d662c443b43ce2ae2e5cc9831ddea";
+
 const privateKeyProviderMainnet = new PrivateKeyProvider(privateKey, "https://besu.chainz.network");
 const privateKeyProviderTestnet = new PrivateKeyProvider(privateKey, "https://besutest.chainz.network");
 
 module.exports = {
- 
+
   networks: {
         // development env ( ganache )
         development: {
@@ -14,16 +15,16 @@ module.exports = {
           network_id: "5777"
         },
         // test env ( testnet )
-        besuTest: {
+        test: {
           provider: privateKeyProviderTestnet,
           gasPrice: 0,
-          network_id: "2020"
+          network_id: "2020",
         },
         // prod env ( mainnet )
         besu: {
           provider: privateKeyProviderMainnet,
           gasPrice: 0,
-          network_id: "2020"
+          network_id: "2020",
         },
   },
   // Configure your compilers

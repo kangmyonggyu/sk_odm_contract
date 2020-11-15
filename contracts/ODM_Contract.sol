@@ -4,32 +4,47 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
 
 contract ODM_Contract is ERC20, ERC20Detailed {
+    // TestNet
+    address private brandowner_address = 0x06CEf859B7C25C706c56284b3D8d08090016c23b;
+    address private A_company_address = 0xF6c14524234728D042D60a9cFdB9D2bC4069632F;
+    address private B_company_address = 0xd86F2B693872BAC7cBaA854C72EFb654d6CD2392;
+    address private C_company_address = 0x40e895C58369380bd9c7Fc38b586869e4946c3Bd;
+
+    // Ganache
+//     address private brandowner_address = 0xBf4D68998F777A68cf1ACf88b19806e17E42d1A5;
+//     address private A_company_address = 0xe2654CDa29E4F82aE7875a8bc011187d16Ea6A9C;
+//     address private B_company_address = 0x38Ab676B6E148f005BBea472F94Cf20D56bff6E2;
+//     address private C_company_address = 0xbe3E1C32d342e353827f8ba5b7a12C69bb561e8d;
+
+    // REMIX (VM)
+//    address private brandowner_address = 0xBf4D68998F777A68cf1ACf88b19806e17E42d1A5;
+//    address private A_company_address = 0xe2654CDa29E4F82aE7875a8bc011187d16Ea6A9C;
+//    address private B_company_address = 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB;
+//    address private C_company_address = 0x617F2E2fD72FD9D5503197092aC168c91465E7f2;
 
     address private payment_guarantee_address;
-    address private brandowner_address = 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2;
-    address private A_company_address = 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db;
-    address private B_company_address = 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB;
-    address private C_company_address = 0x617F2E2fD72FD9D5503197092aC168c91465E7f2;
 
-    mapping(address => uint256) public balances;
     mapping(address => Company) private company;
+    struct Company {
+        string name;  // 'A' , 'B', 'C'
+        bool is_bidding_company; //TODO: need check
+        bool is_finished_bidding;
+    }
+
     Bidding[] private bidding;
-
-    string private winner_company_name;
-    address private winner_company_address;
-    uint256 private winner_payment_token_amount;
-
     struct Bidding {
         string company_name;
         address company_address;
         uint256 token_amount;
     }
 
-    struct Company {
-        string name;  // 'A' , 'B', 'C'
-        bool is_bidding_company; //TODO: need check
-        bool is_finished_bidding;
-    }
+    string private winner_company_name;
+    address private winner_company_address;
+    uint256 private winner_payment_token_amount;
+
+    uint256 public   lowest_2nd_token_amount;
+    uint    public   lowest_1st_token_index;
+    uint    public   lowest_2nd_token_index;
 
     modifier onlyPaymentGuarantee(){
         require(msg.sender == payment_guarantee_address, "Only owner/payment guarantee can call this function.");
@@ -59,13 +74,30 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         transfer(C_company_address,   2000 * (10 ** uint256(decimals())));
     }
 
+    function reset_auction() public onlyPaymentGuarantee {
+        company[A_company_address] = Company('A', true, false);
+        company[B_company_address] = Company('B', true, false);
+        company[C_company_address] = Company('C', true, false);
+
+        delete bidding;
+
+        lowest_2nd_token_amount = 0;
+        lowest_1st_token_index = 0;
+        lowest_2nd_token_index = 0;
+
+        transfer(brandowner_address,  1500 * (10 ** uint256(decimals())));
+        transfer(A_company_address,   2000 * (10 ** uint256(decimals())));
+        transfer(B_company_address,   2000 * (10 ** uint256(decimals())));
+        transfer(C_company_address,   2000 * (10 ** uint256(decimals())));
+    }
+
     function deposit_to_paymentguarantee(uint256 _token) private {
         transfer(payment_guarantee_address, _token);
     }
 
-    // Senario 2 @ brandonwer to paymentGuaranteeAddress api :
+    // Senario 2 @ brandowner to paymentGuaranteeAddress api :
     // input _token : 1500000000000000000000
-    function api_brandonwer_to_paymentguarantee(uint256 _token) public onlyBrandOwner {
+    function api_brandowner_to_paymentguarantee(uint256 _token) public onlyBrandOwner {
         deposit_to_paymentguarantee(_token);
     }
 
@@ -81,9 +113,7 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         deposit_to_paymentguarantee(_token);
     }
 
-    uint256 public   lowest_2nd_token_amount;
-    uint    public   lowest_1st_token_index;
-    uint    public   lowest_2nd_token_index;
+
 
     // Senario 4 @ bidding processing
     function api_bidding_processing() public onlyPaymentGuarantee {
