@@ -1,10 +1,10 @@
 const PrivateKeyProvider = require("@truffle/hdwallet-provider");
 
+const testnet_privateKey = "0x39fcb451a731a0ad58e58fe1cbaa851c953062813dffe070e6a5a623f67b91de";
 const mainnet_privateKey = "0xa4aaa8c1db80d6449b11c6ed2e2d40c17f5a6c5304c9599371152632e64b2bdf";
-const testnet_privateKey = "0xb530d97a37813d8d2f76a84e41d0d779b51d662c443b43ce2ae2e5cc9831ddea";
 
-const privateKeyProviderMainnet = new PrivateKeyProvider(mainnet_privateKey, "https://besu.chainz.network");
 const privateKeyProviderTestnet = new PrivateKeyProvider(testnet_privateKey, "https://besutest.chainz.network");
+const privateKeyProviderMainnet = new PrivateKeyProvider(mainnet_privateKey, "https://besu.chainz.network");
 
 module.exports = {
 

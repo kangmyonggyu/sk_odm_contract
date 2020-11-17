@@ -6,18 +6,19 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol";
 contract ODM_Contract is ERC20, ERC20Detailed {
 
     // MainNet
-//    address private brandowner_address = 0x06CEf859B7C25C706c56284b3D8d08090016c23b;
-//    address private A_company_address = 0xF6c14524234728D042D60a9cFdB9D2bC4069632F;
-//    address private B_company_address = 0xd86F2B693872BAC7cBaA854C72EFb654d6CD2392;
-//    address private C_company_address = 0x40e895C58369380bd9c7Fc38b586869e4946c3Bd;
-
-    // TestNet
     address private brandowner_address = 0xc5D50eCcb13a6428BEd539ccB02294A1Bb90FDD6;
     address private A_company_address = 0xACb3907F9c6cdb834EA1277D99278F283cD82066;
     address private B_company_address = 0x5B3eCaB5c578A26992C2F8677d84812362A036E7;
     address private C_company_address = 0x8A711d936aDBBf9495FF3064395B7D2590D64ceE;
 
+    // TestNet
+//    address private brandowner_address = 0x4ACB42d6CD76001c2e427E2De6ACb27C4466eB12;
+//    address private A_company_address = 0xC96c845d3246F52BEC42C13050bc36B9f1860298;
+//    address private B_company_address = 0x9bE87345B869B2b331D4E91c7A7B30bc981Ee36E;
+//    address private C_company_address = 0xc9BeF9a0e1b49Bc55a3c9e6f4dC24039793d8F6b;
+
     // Ganache
+
 //     address private brandowner_address = 0xBf4D68998F777A68cf1ACf88b19806e17E42d1A5;
 //     address private A_company_address = 0xe2654CDa29E4F82aE7875a8bc011187d16Ea6A9C;
 //     address private B_company_address = 0x38Ab676B6E148f005BBea472F94Cf20D56bff6E2;
@@ -44,6 +45,14 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         address company_address;
         uint256 token_amount;
     }
+
+    struct Winner {
+        string company_name;
+        address company_address;
+        uint256 token_amount;
+    }
+
+    Winner public winner;
 
     event event_transfer(string tx,address from, address to, uint256 token);
 
@@ -96,6 +105,10 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         lowest_2nd_token_index = 0;
         winner_payment_token_amount = 0;
 
+        winner.company_name = "";
+        winner.company_address = address(0);
+        winner.token_amount = 0;
+
         transfer(brandowner_address,  1500 * (10 ** uint256(decimals())));
         transfer(A_company_address,   2000 * (10 ** uint256(decimals())));
         transfer(B_company_address,   2000 * (10 ** uint256(decimals())));
@@ -117,12 +130,13 @@ contract ODM_Contract is ERC20, ERC20Detailed {
     function api_bidding_company_to_paymentguarantee(uint256 _token) public onlyCompany {
         require(!company[msg.sender].is_finished_bidding,"You have already participated in the bidding.");
         transfer(payment_guarantee_address, _token);
-        bidding.push(Bidding(company[msg.sender].name, msg.sender, _token)); //TODO: transaction processing
-        company[msg.sender].is_finished_bidding = true;                             //TODO: transaction processing
+        bidding.push(Bidding(company[msg.sender].name, msg.sender, _token));
+        company[msg.sender].is_finished_bidding = true;
     }
 
-    // Senario 4 @ bidding processing
-    function api_bidding_processing() public onlyPaymentGuarantee {
+    // Senario 4 @ bidding processing ,
+    // Senario 6 @ Transfer Payment to Company
+    function api_bidding_processing() public  onlyPaymentGuarantee {
         lowest_1st_token_index = find_minimum_bidding_company_index(bidding);
 
         lowest_2nd_token_index = find_minimum_bidding_company_index(bidding, lowest_1st_token_index);
@@ -131,6 +145,10 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         winner_company_name = bidding[lowest_1st_token_index].company_name;
         winner_company_address = bidding[lowest_1st_token_index].company_address;
         winner_payment_token_amount = lowest_2nd_token_amount;
+
+        winner.company_name = winner_company_name;
+        winner.company_address = winner_company_address;
+        winner.token_amount = winner_payment_token_amount;
 
         refund_bidding_token();
         refund_deposit_token_to_brandowner();
@@ -193,8 +211,8 @@ contract ODM_Contract is ERC20, ERC20Detailed {
     function refund_bidding_token () private {
         for (uint i = 0 ; i < bidding.length ; i++) {
             transfer(bidding[i].company_address, bidding[i].token_amount);
-//            emit event_transfer(msg.sender,)
-//            event_transfer(string tx,address from, address to, uint256 token);
+            //            emit event_transfer(msg.sender,)
+            //            event_transfer(string tx,address from, address to, uint256 token);
         }
     }
 
@@ -212,6 +230,7 @@ contract ODM_Contract is ERC20, ERC20Detailed {
         company[A_company_address] = Company('A', true, false);
         company[B_company_address] = Company('B', true, false);
         company[C_company_address] = Company('C', true, false);
+
         delete bidding;
         deposit_token_amount = 0;
         lowest_2nd_token_amount = 0;
