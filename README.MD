@@ -34,8 +34,8 @@ Senario 2. Brand Owner 계좌에서 Payment Guarantee 계좌로 OBT(ODM Bidding 
 
 ###   - Parameter
 
-`uint256 _token`
-`-> Brand Owner 계좌에서 Payment Guarantee 계좌로 송금할 금액`
+    uint256 _token
+    -> Brand Owner 계좌에서 Payment Guarantee 계좌로 송금할 금액
 
 ###   - Return
 
