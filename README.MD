@@ -64,7 +64,7 @@ Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> main function
 
 ## 5. find_minimum_bidding_company_index
 `함수 설명`<br>
-Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> 최저가 입찰 업체 확인
+Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> 최저가 입찰 업체(낙찰 업체) 확인
 
 ###   - modifier (function 수행 시, 선행 조건)
     
@@ -78,7 +78,7 @@ Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> 최저가 입
 
 ## 6. find_minimum_bidding_company_index
 `함수 설명`<br>
-Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> 하위 2번째 입찰 업체 확인
+Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> 하위 2번째 최저가 입찰 금액 확인
 
 ###   - modifier (function 수행 시, 선행 조건)
     
@@ -90,7 +90,7 @@ Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> 하위 2번�
 
 ###   - Return
     uint minimum_token_company_index
-    -> 하위 2번째 입찰 업체의 index 번호
+    -> 하위 2번째 최저가 입찰금액 업체의 index 번호
     
 ## 7. refund_bidding_token
 `함수 설명`<br>
@@ -104,10 +104,25 @@ Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> 업체 선정
     
 ## 8. refund_deposit_token_to_brandowner
 `함수 설명`<br>
-Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> 업체 선정 후, Brand Owner에게 ODM token refund
+Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> 업체 선정 후 Brand Owner에게, deposit 금액에서 확정 입찰가를 제외한 ODM token refund
 
 ###   - modifier (function 수행 시, 선행 조건)
     
 ###   - Parameter
     
 ###   - Return
+
+## 9. payment_winner_bidding_token
+`함수 설명`<br>
+Senario 6. Payment Guarantee 계좌에서 낙찰된 업체 계좌로 하위 2번째 입찰가 deposit
+
+###   - modifier (function 수행 시, 선행 조건)
+    
+###   - Parameter
+    address _winner_address
+    -> 최저가 입찰 업체의 address
+    uint256 _winner_token
+    -> 하위 2번째 입찰 금액
+    
+###   - Return
+    
