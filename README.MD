@@ -8,6 +8,7 @@ Vickrey 경매를 초기화 하는 Function
 
 ###   - modifier (function 수행 시, 선행 조건)
 `onlyPaymentGuarantee`
+
     require(msg.sender == payment_guarantee_address, "Only owner/payment guarantee can call this function.");
     -> payment_guarantee address로 function이 호출될 시에만 수행
 
@@ -21,6 +22,7 @@ Senario 2. Brand Owner 계좌에서 Payment Guarantee 계좌로 OBT(ODM Bidding 
 
 ###   - modifier (function 수행 시, 선행 조건)
 `onlyBrandOwner`
+
     require(msg.sender == brandowner_address, "Only brand owner can call this function.");
     -> brand owner address로 function이 호출될 시에만 수행
 
@@ -36,6 +38,7 @@ Senario 3. 각 업체별 OBT token 제안가로 입찰 참여
 
 ###   - modifier (function 수행 시, 선행 조건)
 `onlyCompany`
+
     require(company[msg.sender].is_bidding_company, "Only Company can call this function.");
     -> Bidding 참여 업체 address로 function이 호출될 시에만 수행
 
@@ -51,6 +54,7 @@ Senario 4. Vickrey 경매 조건에 따른 낙찰 업체 선정 -> main function
 
 ###   - modifier (function 수행 시, 선행 조건)
 `onlyCompany`
+
     require(company[msg.sender].is_bidding_company, "Only Company can call this function.");
     -> Bidding 참여 업체 address로 function이 호출될 시에만 수행
 
