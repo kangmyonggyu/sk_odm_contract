@@ -4,7 +4,7 @@ ODM Bidding Contact에서 구현한 function list는 다음과 같습니다.
 
 ## &nbsp;&nbsp;&nbsp;&nbsp;reset_auction
 
-`함수 설명`
+&nbsp;&nbsp;&nbsp;&nbsp;`함수 설명`<br>
     Vickrey 경매를 초기화 하는 Function
 
 ### modifier (function 수행 시, 선행 조건)
